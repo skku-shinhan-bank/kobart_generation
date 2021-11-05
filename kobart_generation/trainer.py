@@ -14,68 +14,52 @@ from transformers import (BartForConditionalGeneration,
 from transformers.optimization import AdamW, get_cosine_schedule_with_warmup
 from kobart_transformers import get_kobart_tokenizer
 
-# from .module.dataset import ChatDataModule
-# from .module.model import Base
 
-class Base(pl.LightningModule):
-    def __init__(self, hparams, **kwargs) -> None:
-        super(Base, self).__init__()
-        self.save_hyperparameters(hparams)
+parser = argparse.ArgumentParser(description='Shinhan_KoBART_generator')
 
+
+parser.add_argument('--checkpoint_path',
+                    type=str,
+                    help='checkpoint path')
+
+parser.add_argument('--chat',
+                    action='store_true',
+                    default=False,
+                    help='response generation on given user input')
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+
+class ArgsBase():
     @staticmethod
     def add_model_specific_args(parent_parser):
-        # add model specific args
         parser = argparse.ArgumentParser(
             parents=[parent_parser], add_help=False)
+        parser.add_argument('--train_file',
+                            type=str,
+                            default='Chatbot_data/train.csv',
+                            help='train file')
 
-        parser.add_argument('--batch-size',
+        parser.add_argument('--test_file',
+                            type=str,
+                            default='Chatbot_data/test.csv',
+                            help='test file')
+
+        parser.add_argument('--tokenizer_path',
+                            type=str,
+                            default='tokenizer',
+                            help='tokenizer')
+        parser.add_argument('--batch_size',
                             type=int,
                             default=14,
-                            help='batch size for training (default: 96)')
-
-        parser.add_argument('--lr',
-                            type=float,
-                            default=5e-5,
-                            help='The initial learning rate')
-
-        parser.add_argument('--warmup_ratio',
-                            type=float,
-                            default=0.1,
-                            help='warmup ratio')
-
-        parser.add_argument('--model_path',
-                            type=str,
-                            default=None,
-                            help='kobart model path')
+                            help='')
+        parser.add_argument('--max_seq_len',
+                            type=int,
+                            default=256,
+                            help='max seq len')
         return parser
 
-    def configure_optimizers(self):
-        # Prepare optimizer
-        param_optimizer = list(self.model.named_parameters())
-        no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
-        optimizer_grouped_parameters = [
-            {'params': [p for n, p in param_optimizer if not any(
-                nd in n for nd in no_decay)], 'weight_decay': 0.01},
-            {'params': [p for n, p in param_optimizer if any(
-                nd in n for nd in no_decay)], 'weight_decay': 0.0}
-        ]
-        optimizer = AdamW(optimizer_grouped_parameters,
-                          lr=self.hparams.lr, correct_bias=False)
-        # warm up lr
-        num_workers = (self.hparams.gpus if self.hparams.gpus is not None else 1) * (self.hparams.num_nodes if self.hparams.num_nodes is not None else 1)
-        data_len = len(self.train_dataloader().dataset)
-        logging.info(f'number of workers {num_workers}, data length {data_len}')
-        num_train_steps = int(data_len / (self.hparams.batch_size * num_workers) * self.hparams.max_epochs)
-        logging.info(f'num_train_steps : {num_train_steps}')
-        num_warmup_steps = int(num_train_steps * self.hparams.warmup_ratio)
-        logging.info(f'num_warmup_steps : {num_warmup_steps}')
-        scheduler = get_cosine_schedule_with_warmup(
-            optimizer,
-            num_warmup_steps=num_warmup_steps, num_training_steps=num_train_steps)
-        lr_scheduler = {'scheduler': scheduler, 
-                        'monitor': 'loss', 'interval': 'step',
-                        'frequency': 1}
-        return [optimizer], [lr_scheduler]
 
 class ChatDataset(Dataset):
     def __init__(self, filepath, tok_vocab, max_seq_len=128) -> None:
@@ -179,51 +163,66 @@ class ChatDataModule(pl.LightningDataModule):
         return test
 
 
+class Base(pl.LightningModule):
+    def __init__(self, hparams, **kwargs) -> None:
+        super(Base, self).__init__()
+        self.save_hyperparameters(hparams)
 
-parser = argparse.ArgumentParser(description='Shinhan_KoBART_generator')
-
-
-parser.add_argument('--checkpoint_path',
-                    type=str,
-                    help='checkpoint path')
-
-parser.add_argument('--chat',
-                    action='store_true',
-                    default=False,
-                    help='response generation on given user input')
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
-
-class ArgsBase():
     @staticmethod
     def add_model_specific_args(parent_parser):
+        # add model specific args
         parser = argparse.ArgumentParser(
             parents=[parent_parser], add_help=False)
-        parser.add_argument('--train_file',
-                            type=str,
-                            default='Chatbot_data/train.csv',
-                            help='train file')
 
-        parser.add_argument('--test_file',
-                            type=str,
-                            default='Chatbot_data/test.csv',
-                            help='test file')
-
-        parser.add_argument('--tokenizer_path',
-                            type=str,
-                            default='tokenizer',
-                            help='tokenizer')
-        parser.add_argument('--batch_size',
+        parser.add_argument('--batch-size',
                             type=int,
                             default=14,
-                            help='')
-        parser.add_argument('--max_seq_len',
-                            type=int,
-                            default=256,
-                            help='max seq len')
+                            help='batch size for training (default: 96)')
+
+        parser.add_argument('--lr',
+                            type=float,
+                            default=5e-5,
+                            help='The initial learning rate')
+
+        parser.add_argument('--warmup_ratio',
+                            type=float,
+                            default=0.1,
+                            help='warmup ratio')
+
+        parser.add_argument('--model_path',
+                            type=str,
+                            default=None,
+                            help='kobart model path')
         return parser
+
+    def configure_optimizers(self):
+        # Prepare optimizer
+        param_optimizer = list(self.model.named_parameters())
+        no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
+        optimizer_grouped_parameters = [
+            {'params': [p for n, p in param_optimizer if not any(
+                nd in n for nd in no_decay)], 'weight_decay': 0.01},
+            {'params': [p for n, p in param_optimizer if any(
+                nd in n for nd in no_decay)], 'weight_decay': 0.0}
+        ]
+        optimizer = AdamW(optimizer_grouped_parameters,
+                          lr=self.hparams.lr, correct_bias=False)
+        # warm up lr
+        num_workers = (self.hparams.gpus if self.hparams.gpus is not None else 1) * (self.hparams.num_nodes if self.hparams.num_nodes is not None else 1)
+        data_len = len(self.train_dataloader().dataset)
+        logging.info(f'number of workers {num_workers}, data length {data_len}')
+        num_train_steps = int(data_len / (self.hparams.batch_size * num_workers) * self.hparams.max_epochs)
+        logging.info(f'num_train_steps : {num_train_steps}')
+        num_warmup_steps = int(num_train_steps * self.hparams.warmup_ratio)
+        logging.info(f'num_warmup_steps : {num_warmup_steps}')
+        scheduler = get_cosine_schedule_with_warmup(
+            optimizer,
+            num_warmup_steps=num_warmup_steps, num_training_steps=num_train_steps)
+        lr_scheduler = {'scheduler': scheduler, 
+                        'monitor': 'loss', 'interval': 'step',
+                        'frequency': 1}
+        return [optimizer], [lr_scheduler]
+
 
 class KoBARTConditionalGeneration(Base):
     def __init__(self, hparams, **kwargs):
@@ -311,3 +310,4 @@ if __name__ == '__main__':
         
         predict_output = pd.DataFrame(predict_output) #데이터 프레임으로 전환
         predict_output.to_excel(excel_writer='KoBART_predict_data.xlsx', encoding='utf-8') #엑셀로 저장          
+
