@@ -14,7 +14,6 @@ from transformers import (BartForConditionalGeneration,
 from transformers.optimization import AdamW, get_cosine_schedule_with_warmup
 from kobart_transformers import get_kobart_tokenizer
 
-from .model import Base
 from .dataset import ChatDataModule
 
 parser = argparse.ArgumentParser(description='Shinhan_KoBART_generator')
@@ -49,7 +48,6 @@ class ArgsBase():
                             help='test file')
 
         parser.add_argument('--tokenizer_path',
-                            type=str,
                             default='tokenizer',
                             help='tokenizer')
         parser.add_argument('--batch_size',
@@ -61,6 +59,8 @@ class ArgsBase():
                             default=256,
                             help='max seq len')
         return parser
+
+from .model import Base
 
 class KoBARTConditionalGeneration(Base):
     def __init__(self, hparams, **kwargs):
