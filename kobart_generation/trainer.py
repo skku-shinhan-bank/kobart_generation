@@ -14,69 +14,8 @@ from transformers import (BartForConditionalGeneration,
 from transformers.optimization import AdamW, get_cosine_schedule_with_warmup
 from kobart_transformers import get_kobart_tokenizer
 
-# from .model import Base
-from .dataset import ChatDataModule
-
-class Base(pl.LightningModule):
-    def __init__(self, hparams, **kwargs) -> None:
-        super(Base, self).__init__()
-        self.save_hyperparameters(hparams)
-
-    @staticmethod
-    def add_model_specific_args(parent_parser):
-        # add model specific args
-        parser = argparse.ArgumentParser(
-            parents=[parent_parser], add_help=False)
-
-        parser.add_argument('--batch-size',
-                            type=int,
-                            default=14,
-                            help='batch size for training (default: 96)')
-
-        parser.add_argument('--lr',
-                            type=float,
-                            default=5e-5,
-                            help='The initial learning rate')
-
-        parser.add_argument('--warmup_ratio',
-                            type=float,
-                            default=0.1,
-                            help='warmup ratio')
-
-        parser.add_argument('--model_path',
-                            type=str,
-                            default=None,
-                            help='kobart model path')
-        return parser
-
-    def configure_optimizers(self):
-        # Prepare optimizer
-        param_optimizer = list(self.model.named_parameters())
-        no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
-        optimizer_grouped_parameters = [
-            {'params': [p for n, p in param_optimizer if not any(
-                nd in n for nd in no_decay)], 'weight_decay': 0.01},
-            {'params': [p for n, p in param_optimizer if any(
-                nd in n for nd in no_decay)], 'weight_decay': 0.0}
-        ]
-        optimizer = AdamW(optimizer_grouped_parameters,
-                          lr=self.hparams.lr, correct_bias=False)
-        # warm up lr
-        num_workers = (self.hparams.gpus if self.hparams.gpus is not None else 1) * (self.hparams.num_nodes if self.hparams.num_nodes is not None else 1)
-        data_len = len(self.train_dataloader().dataset)
-        logging.info(f'number of workers {num_workers}, data length {data_len}')
-        num_train_steps = int(data_len / (self.hparams.batch_size * num_workers) * self.hparams.max_epochs)
-        logging.info(f'num_train_steps : {num_train_steps}')
-        num_warmup_steps = int(num_train_steps * self.hparams.warmup_ratio)
-        logging.info(f'num_warmup_steps : {num_warmup_steps}')
-        scheduler = get_cosine_schedule_with_warmup(
-            optimizer,
-            num_warmup_steps=num_warmup_steps, num_training_steps=num_train_steps)
-        lr_scheduler = {'scheduler': scheduler, 
-                        'monitor': 'loss', 'interval': 'step',
-                        'frequency': 1}
-        return [optimizer], [lr_scheduler]
-
+from .module.dataset import ChatDataModule
+from .module.model import Base
 
 parser = argparse.ArgumentParser(description='Shinhan_KoBART_generator')
 
