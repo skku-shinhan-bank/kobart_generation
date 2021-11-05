@@ -17,6 +17,21 @@ from kobart_transformers import get_kobart_tokenizer
 from .model import Base
 from .dataset import CommentDataModule, CommentDataset
 
+parser = argparse.ArgumentParser(description='Shinhan_KoBART_generator')
+
+parser.add_argument('--checkpoint_path',
+                    type=str,
+                    help='checkpoint path')
+
+parser.add_argument('--chat',
+                    action='store_true',
+                    default=False,
+                    help='response generation on given user input')
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+
 class KoBARTGenerationTrainer(Base):
     def __init__(self, hparams, **kwargs):
         super(KoBARTGenerationTrainer, self).__init__(hparams, **kwargs)
@@ -75,19 +90,6 @@ class ArgsBase():
         return parser
 
 
-parser = argparse.ArgumentParser(description='Shinhan_KoBART_generator')
-
-parser.add_argument('--checkpoint_path',
-                    type=str,
-                    help='checkpoint path')
-
-parser.add_argument('--chat',
-                    action='store_true',
-                    default=False,
-                    help='response generation on given user input')
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
 
 
 if __name__ == '__main__':
