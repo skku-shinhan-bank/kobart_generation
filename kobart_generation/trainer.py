@@ -34,7 +34,7 @@ class ArgsBase():
 
         parser.add_argument('--tokenizer_path',
                             type=str,
-                            default='tokenizer',
+                            default="hyunwoongko/kobart",
                             help='tokenizer')
         parser.add_argument('--batch_size',
                             type=int,
