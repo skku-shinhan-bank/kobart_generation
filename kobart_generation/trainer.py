@@ -14,27 +14,8 @@ from transformers import (BartForConditionalGeneration,
 from transformers.optimization import AdamW, get_cosine_schedule_with_warmup
 from kobart_transformers import get_kobart_tokenizer
 
-# from .model import Base
-# from .dataset import CommentDataModule
-import base_model
+import model
 import dataset
-
-
-parser = argparse.ArgumentParser(description='KoBART Comment Generation')
-
-
-parser.add_argument('--checkpoint_path',
-                    type=str,
-                    help='checkpoint path')
-
-parser.add_argument('--chat',
-                    action='store_true',
-                    default=False,
-                    help='response generation on given user input')
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
 
 class ArgsBase():
     @staticmethod
@@ -65,8 +46,7 @@ class ArgsBase():
                             help='max seq len')
         return parser
 
-
-class KoBARTConditionalGeneration(base_model.Base):
+class KoBARTConditionalGeneration(model.Base):
     def __init__(self, hparams, **kwargs):
         super(KoBARTConditionalGeneration, self).__init__(hparams, **kwargs)
         self.model = BartForConditionalGeneration.from_pretrained(self.hparams.model_path)
@@ -104,15 +84,31 @@ class KoBARTConditionalGeneration(base_model.Base):
         a = self.tokenizer.batch_decode(res_ids.tolist())[0]
         return a.replace('<s>', '').replace('</s>', '')
 
+
+parser = argparse.ArgumentParser(description='KoBART Comment Generation')
+
+parser.add_argument('--checkpoint_path',
+                    type=str,
+                    help='checkpoint path')
+
+parser.add_argument('--chat',
+                    action='store_true',
+                    default=False,
+                    help='response generation on given user input')
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+
 if __name__ == '__main__':
-    parser = base_model.Base.add_model_specific_args(parser)
+    parser = model.Base.add_model_specific_args(parser)
     parser = ArgsBase.add_model_specific_args(parser)
     parser = dataset.CommentDataModule.add_model_specific_args(parser)
     parser = pl.Trainer.add_argparse_args(parser)
     args = parser.parse_args()
     logging.info(args)
 
-    model = KoBARTConditionalGeneration(args)
+    train_model = KoBARTConditionalGeneration(args)
 
     dm = dataset.CommentDataModule(args.train_file,
                         args.test_file,
@@ -131,13 +127,13 @@ if __name__ == '__main__':
     lr_logger = pl.callbacks.LearningRateMonitor()
     trainer = pl.Trainer.from_argparse_args(args, logger=tb_logger,
                                             callbacks=[checkpoint_callback, lr_logger])
-    trainer.fit(model, dm)
+    trainer.fit(train_model, dm)
     if args.chat:
-        model.model.eval()
+        train_model.model.eval()
 
         predict_output = []
         cnt=0
-        model.model.eval()
+        train_model.model.eval()
         predict_data_path = input()
         predict_data= pd.read_excel(predict_data_path)
         for sentence in predict_data['review']:
@@ -146,7 +142,7 @@ if __name__ == '__main__':
             cnt = cnt + 1
             print(cnt)
             row.append(sentence)
-            row.append(model.chat(sentence))
+            row.append(train_model.chat(sentence))
 
             predict_output.append(row)
         
