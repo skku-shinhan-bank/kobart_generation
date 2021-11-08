@@ -19,11 +19,10 @@ import dataset
 
 
 class KoBARTCommentGenerator(model.Base):
-    def __init__(self, model_path, max_seq_len, test_file):
+    def __init__(self, model_path, max_seq_len):
         super(KoBARTCommentGenerator, self).__init__(model_path, max_seq_len)
         self.model_path = model_path
         self.max_seq_len = max_seq_len
-        self.test_file = test_file
         self.model = BartForConditionalGeneration.from_pretrained("hyunwoongko/kobart")
         self.model = torch.load(self.model_path)
         self.model.eval()
@@ -68,7 +67,8 @@ class KoBARTCommentGenerator(model.Base):
     
     def making_comment_excel(self):
         predict_output = []
-        test_data = pd.read_excel(self.test_file)
+        file_path = input()
+        test_data = pd.read_excel(file_path)
         for sentence in test_data['review']:
             row = []
             cnt = cnt + 1
