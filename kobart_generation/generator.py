@@ -65,7 +65,7 @@ class KoBARTCommentGenerator(model.Base):
                 break
             print(self.model.chat(q))
     
-    def making_comment_excel(self):
+    def make_comment_excel(self):
         predict_output = []
         file_path = input()
         test_data = pd.read_excel(file_path)
