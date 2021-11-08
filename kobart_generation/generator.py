@@ -62,14 +62,14 @@ class KoBARTCommentGenerator(model.Base):
     def print_comment(self, model_path, max_seq_len):
         self.model_path = model_path
         self.max_seq_len = max_seq_len
-        
+
         while 1:
             q = input()
             if q=='quit':
                 break
             print(self.model.chat(q))
     
-    def make_comment_excel(self, , model_path, max_seq_len, file_path):
+    def make_comment_excel(self, model_path, max_seq_len, file_path):
         self.model_path = model_path
         self.max_seq_len = max_seq_len
 
