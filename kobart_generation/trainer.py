@@ -24,12 +24,12 @@ class ArgsBase():
             parents=[parent_parser], add_help=False)
         parser.add_argument('--train_file',
                             type=str,
-                            default='Chatbot_data/train.csv',
+                            default='/content/drive/MyDrive/신한은행/training-data/generate_data/kobart_crawled_shinhan_data.csv',
                             help='train file')
 
         parser.add_argument('--test_file',
                             type=str,
-                            default='Chatbot_data/test.csv',
+                            default='/content/drive/MyDrive/신한은행/training-data/generate_data/kobart_testdata.csv',
                             help='test file')
 
         parser.add_argument('--tokenizer_path',
