@@ -19,10 +19,11 @@ import dataset
 
 
 class KoBARTCommentGenerator(model.Base):
-    def __init__(self, model_path, max_seq_len):
+    def __init__(self, model_path, max_seq_len, test_file):
         super(KoBARTCommentGenerator, self).__init__(model_path, max_seq_len)
         self.model_path = model_path
         self.max_seq_len = max_seq_len
+        self.test_file = test_file
         self.model = BartForConditionalGeneration.from_pretrained("hyunwoongko/kobart")
         self.model = torch.load(self.model_path)
         self.model.eval()
@@ -58,25 +59,23 @@ class KoBARTCommentGenerator(model.Base):
         a = self.tokenizer.batch_decode(res_ids.tolist())[0]
         return a.replace('<s>', '').replace('</s>', '')
 
+    def print_comment(self):
+        while 1:
+            q = input()
+            if q=='quit':
+                break
+            print(self.model.chat(q))
+    
+    def making_comment_excel(self):
+        predict_output = []
+        test_data = pd.read_excel(self.test_file)
+        for sentence in test_data['review']:
+            row = []
+            cnt = cnt + 1
+            print(cnt)
+            row.append(sentence)
+            row.append(self.model.chat(sentence))
+            predict_output.append(row)
+        predict_output = pd.DataFrame(predict_output) #데이터 프레임으로 전환
+        predict_output.to_excel(excel_writer='KoBART_predict_data.xlsx', encoding='utf-8') 
 
-
-    # if args.chat:
-    #     train_model.model.eval()
-
-    #     predict_output = []
-    #     cnt=0
-    #     train_model.model.eval()
-    #     predict_data_path = input()
-    #     predict_data= pd.read_excel(predict_data_path)
-    #     for sentence in predict_data['review']:
-    #         row = []
-
-    #         cnt = cnt + 1
-    #         print(cnt)
-    #         row.append(sentence)
-    #         row.append(train_model.chat(sentence))
-
-    #         predict_output.append(row)
-        
-    #     predict_output = pd.DataFrame(predict_output) #데이터 프레임으로 전환
-    #     predict_output.to_excel(excel_writer='KoBART_predict_data.xlsx', encoding='utf-8') #엑셀로 저장          

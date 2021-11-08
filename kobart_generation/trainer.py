@@ -128,6 +128,7 @@ if __name__ == '__main__':
                                             callbacks=[checkpoint_callback, lr_logger])
     trainer.fit(train_model, dm)
     torch.save(model.state_dict(), "output.pth")
+    
     # if args.chat:
     #     train_model.model.eval()
 
