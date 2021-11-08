@@ -127,7 +127,7 @@ if __name__ == '__main__':
     trainer = pl.Trainer.from_argparse_args(args, logger=tb_logger,
                                             callbacks=[checkpoint_callback, lr_logger])
     trainer.fit(train_model, dm)
-    torch.save(train_model, 'output.pth')
+    torch.save(train_model.state_dict(), 'output.pth')
     
     # if args.chat:
     #     train_model.model.eval()
