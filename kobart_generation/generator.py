@@ -19,13 +19,11 @@ import dataset
 
 
 class KoBARTCommentGenerator(model.Base):
-    def __init__(self, model_path, max_seq_len):
-        super(KoBARTCommentGenerator, self).__init__()
-        self.model_path = model_path
-        self.max_seq_len = max_seq_len
+    def __init__(self, hparams, **kwargs):
+        super(KoBARTCommentGenerator, self).__init__(hparams, **kwargs)
+        self.model_path
+        self.max_seq_len
         self.model = BartForConditionalGeneration.from_pretrained("hyunwoongko/kobart")
-        self.model = torch.load(self.model_path)
-        self.model.eval()
         self.bos_token = '<s>'
         self.eos_token = '</s>'
         self.tokenizer = get_kobart_tokenizer()
@@ -49,6 +47,9 @@ class KoBARTCommentGenerator(model.Base):
         self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True)
 
     def chat(self, text):
+        self.model = torch.load(self.model_path)
+        self.model.eval()
+        
         input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(text) + [self.tokenizer.eos_token_id]
         res_ids = self.model.generate(torch.tensor([input_ids]),
                                             max_length=self.max_seq_len,
@@ -58,14 +59,20 @@ class KoBARTCommentGenerator(model.Base):
         a = self.tokenizer.batch_decode(res_ids.tolist())[0]
         return a.replace('<s>', '').replace('</s>', '')
 
-    def print_comment(self):
+    def print_comment(self, model_path, max_seq_len):
+        self.model_path = model_path
+        self.max_seq_len = max_seq_len
+        
         while 1:
             q = input()
             if q=='quit':
                 break
             print(self.model.chat(q))
     
-    def make_comment_excel(self, file_path):
+    def make_comment_excel(self, , model_path, max_seq_len, file_path):
+        self.model_path = model_path
+        self.max_seq_len = max_seq_len
+
         predict_output = []
         test_data = pd.read_excel(file_path)
         for sentence in test_data['review']:
