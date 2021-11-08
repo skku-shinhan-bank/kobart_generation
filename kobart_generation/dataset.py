@@ -90,10 +90,10 @@ class CommentDataModule(pl.LightningDataModule):
     # OPTIONAL, called for every GPU/machine (assigning state is OK)
     def setup(self, stage):
         # split dataset
-        self.train = ChatDataset(self.train_file_path,
+        self.train = CommentDataset(self.train_file_path,
                                  self.tok_vocab,
                                  self.max_seq_len)
-        self.test = ChatDataset(self.test_file_path,
+        self.test = CommentDataset(self.test_file_path,
                                 self.tok_vocab,
                                 self.max_seq_len)
 
