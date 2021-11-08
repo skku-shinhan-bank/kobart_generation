@@ -1,3 +1,3 @@
 from .model import Base
-from .dataset import ChatDataModule, ChatDataset
+from .dataset import CommentDataset, CommentDataModule
 from .trainer import ArgsBase, KoBARTConditionalGeneration

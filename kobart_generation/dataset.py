@@ -14,7 +14,7 @@ from transformers import (BartForConditionalGeneration,
 from transformers.optimization import AdamW, get_cosine_schedule_with_warmup
 from kobart_transformers import get_kobart_tokenizer
 
-class ChatDataset(Dataset):
+class CommentDataset(Dataset):
     def __init__(self, filepath, tok_vocab, max_seq_len=128) -> None:
         self.filepath = filepath
         self.data = pd.read_csv(self.filepath)
@@ -63,7 +63,7 @@ class ChatDataset(Dataset):
                 'labels': np.array(labels, dtype=np.int_)}
 
 
-class ChatDataModule(pl.LightningDataModule):
+class CommentDataModule(pl.LightningDataModule):
     def __init__(self, train_file,
                  test_file, tok_vocab,
                  max_seq_len=128,
