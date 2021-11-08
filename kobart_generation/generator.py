@@ -20,7 +20,7 @@ import dataset
 
 class KoBARTCommentGenerator(model.Base):
     def __init__(self, model_path, max_seq_len):
-        super(KoBARTCommentGenerator, self).__init__(model_path, max_seq_len)
+        super(KoBARTCommentGenerator, self).__init__()
         self.model_path = model_path
         self.max_seq_len = max_seq_len
         self.model = BartForConditionalGeneration.from_pretrained("hyunwoongko/kobart")
