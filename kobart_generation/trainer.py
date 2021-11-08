@@ -73,16 +73,15 @@ class KoBARTConditionalGeneration(model.Base):
         loss = outs['loss']
         self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True)
 
-
-    def chat(self, text):
-        input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(text) + [self.tokenizer.eos_token_id]
-        res_ids = self.model.generate(torch.tensor([input_ids]),
-                                            max_length=self.hparams.max_seq_len,
-                                            num_beams=5,
-                                            eos_token_id=self.tokenizer.eos_token_id,
-                                            bad_words_ids=[[self.tokenizer.unk_token_id]])        
-        a = self.tokenizer.batch_decode(res_ids.tolist())[0]
-        return a.replace('<s>', '').replace('</s>', '')
+    # def chat(self, text):
+    #     input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(text) + [self.tokenizer.eos_token_id]
+    #     res_ids = self.model.generate(torch.tensor([input_ids]),
+    #                                         max_length=self.hparams.max_seq_len,
+    #                                         num_beams=5,
+    #                                         eos_token_id=self.tokenizer.eos_token_id,
+    #                                         bad_words_ids=[[self.tokenizer.unk_token_id]])        
+    #     a = self.tokenizer.batch_decode(res_ids.tolist())[0]
+    #     return a.replace('<s>', '').replace('</s>', '')
 
 
 parser = argparse.ArgumentParser(description='KoBART Comment Generation')
@@ -128,24 +127,25 @@ if __name__ == '__main__':
     trainer = pl.Trainer.from_argparse_args(args, logger=tb_logger,
                                             callbacks=[checkpoint_callback, lr_logger])
     trainer.fit(train_model, dm)
-    if args.chat:
-        train_model.model.eval()
+    torch.save(model.state_dict(), "output.pth")
+    # if args.chat:
+    #     train_model.model.eval()
 
-        predict_output = []
-        cnt=0
-        train_model.model.eval()
-        predict_data_path = input()
-        predict_data= pd.read_excel(predict_data_path)
-        for sentence in predict_data['review']:
-            row = []
+    #     predict_output = []
+    #     cnt=0
+    #     train_model.model.eval()
+    #     predict_data_path = input()
+    #     predict_data= pd.read_excel(predict_data_path)
+    #     for sentence in predict_data['review']:
+    #         row = []
 
-            cnt = cnt + 1
-            print(cnt)
-            row.append(sentence)
-            row.append(train_model.chat(sentence))
+    #         cnt = cnt + 1
+    #         print(cnt)
+    #         row.append(sentence)
+    #         row.append(train_model.chat(sentence))
 
-            predict_output.append(row)
+    #         predict_output.append(row)
         
-        predict_output = pd.DataFrame(predict_output) #데이터 프레임으로 전환
-        predict_output.to_excel(excel_writer='KoBART_predict_data.xlsx', encoding='utf-8') #엑셀로 저장          
+    #     predict_output = pd.DataFrame(predict_output) #데이터 프레임으로 전환
+    #     predict_output.to_excel(excel_writer='KoBART_predict_data.xlsx', encoding='utf-8') #엑셀로 저장          
         
