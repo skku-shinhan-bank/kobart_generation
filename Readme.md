@@ -22,19 +22,18 @@ train_data, test_data form
 
 ```  
 
-## Generate
-
-```python
-import easydict
-
+## Generate  
+```python  
+import easydict  
+  
 args = easydict.EasyDict({
     'model_path':'model_path_from_trainer',
     "max_seq_len": 128
-})
+})  
 
-import generator
+import generator  
 
-comment_generator = generator.KoBARTCommentGenerator(args)
+comment_generator = generator.KoBARTCommentGenerator(args)  
 
 # Chat form : Review -> Generate and print comment
 comment_generator.print_comment() 
