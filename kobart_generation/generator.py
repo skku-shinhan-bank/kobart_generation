@@ -21,9 +21,12 @@ import dataset
 class KoBARTCommentGenerator(model.Base):
     def __init__(self, hparams, **kwargs):
         super(KoBARTCommentGenerator, self).__init__(hparams, **kwargs)
-        self.model_path = "/content/drive/MyDrive/신한은행/model/KoBART_generate_model/output.pth"
-        self.max_seq_len = 128
         self.model = BartForConditionalGeneration.from_pretrained("hyunwoongko/kobart")
+        self.model = torch.load(self.hparams.model_path)
+        self.model.eval()
+        # self.model_path = ""
+        # self.max_seq_len = 128
+
         self.bos_token = '<s>'
         self.eos_token = '</s>'
         self.tokenizer = get_kobart_tokenizer()
@@ -47,31 +50,27 @@ class KoBARTCommentGenerator(model.Base):
         self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True)
 
     def chat(self, text):
-        self.model = torch.load(self.model_path)
-        self.model.eval()
-        
         input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(text) + [self.tokenizer.eos_token_id]
         res_ids = self.model.generate(torch.tensor([input_ids]),
-                                            max_length=self.max_seq_len,
+                                            max_length=self.hparams.max_seq_len,
                                             num_beams=5,
                                             eos_token_id=self.tokenizer.eos_token_id,
                                             bad_words_ids=[[self.tokenizer.unk_token_id]])        
         a = self.tokenizer.batch_decode(res_ids.tolist())[0]
         return a.replace('<s>', '').replace('</s>', '')
 
-    def print_comment(self, model_path, max_seq_len):
-        self.model_path = model_path
-        self.max_seq_len = max_seq_len
-
+    def print_comment(self):
+        # self.model_path = model_path
+        # self.max_seq_len = max_seq_len
         while 1:
             q = input()
             if q=='quit':
                 break
             print(self.chat(q))
     
-    def make_comment_excel(self, model_path, max_seq_len, file_path):
-        self.model_path = model_path
-        self.max_seq_len = max_seq_len
+    def make_comment_excel(self, file_path):
+        # self.model_path = model_path
+        # self.max_seq_len = max_seq_len
 
         predict_output = []
         test_data = pd.read_excel(file_path)
