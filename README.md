@@ -30,9 +30,9 @@ args = easydict.EasyDict({
     "max_seq_len": 128
 })  
 
-import generator  
+from kobart_generation import KoBARTCommentGenerator
 
-comment_generator = generator.KoBARTCommentGenerator(args)  
+comment_generator = KoBARTCommentGenerator(args)  
 
 # Chat form : Review -> Generate and print comment  
 comment_generator.print_comment()  
