@@ -25,15 +25,16 @@ class KoBARTCommentGenerator(Base):
         device = torch.device(ctx)
 
         kobart_model = BartForConditionalGeneration.from_pretrained("hyunwoongko/kobart")
-        checkpoint = torch.load(self.hparams.model_path, map_location=device)
-        kobart_model.load_state_dict(checkpoint, strict=False)
+        # checkpoint = torch.load(self.hparams.model_path, map_location=device)
+        # kobart_model.load_state_dict(checkpoint, strict=False)
+        kobart_model.load_state_dict(torch.load(self.hparams.model_path))
         kobart_model.eval()
 
         self.bos_token = '<s>'
         self.eos_token = '</s>'
         self.tokenizer = get_kobart_tokenizer()
         self.generation_model = kobart_model
-        print(self.generation_model)
+        print(self.generation_model.summary())
 
     def chat(self, text):
         input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(text) + [self.tokenizer.eos_token_id]
