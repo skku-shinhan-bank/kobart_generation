@@ -28,7 +28,7 @@ class KoBARTCommentGenerator(model.Base):
         checkpoint = torch.load(self.hparams.model_path, map_location=device)
         kobart_model.load_state_dict(checkpoint, strict=False)
         kobart_model.eval()
-        print(kobart_model.state_dict()['module.classifier.weight'])
+        print(kobart_model)
 
 
         self.bos_token = '<s>'
