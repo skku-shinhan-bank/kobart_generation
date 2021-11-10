@@ -56,7 +56,8 @@ class KoBARTCommentGenerator(model.Base):
         result = []
         for i in range(0, 3):
             print(i)
-            a = self.tokenizer.batch_decode(res_ids.tolist())[i]
+            print(self.tokenizer.batch_decode(res_ids.tolist()))
+            a = self.tokenizer.batch_decode(res_ids.tolist())[0]
             a.replace('<s>', '').replace('</s>', '')
             print(a)
             print("\n")
