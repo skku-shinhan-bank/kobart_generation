@@ -26,8 +26,8 @@ class KoBARTCommentGenerator(Base):
 
         kobart_model = BartForConditionalGeneration.from_pretrained("hyunwoongko/kobart")
         checkpoint = torch.load(self.hparams.model_path, map_location=device)
-        kobart_model.load_state_dict(checkpoint['state_dict'])
-        # kobart_model.load_state_dict(checkpoint, strict=False)
+        # kobart_model.load_state_dict(checkpoint['state_dict'])
+        kobart_model.load_state_dict(checkpoint, strict=False)
         # kobart_model.load_state_dict(torch.load(self.hparams.model_path))
         kobart_model.eval()
 
