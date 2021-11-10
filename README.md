@@ -10,17 +10,16 @@ pip install torch torchvision torchaudio -f https://download.pytorch.org/whl/tor
 ## Train  
 ```python  
 python trainer.py --train_file 'train_file_path' --test_file 'test_file_path' --max_seq_len 128 --gradient_clip_val 1.0 --max_epochs 3 --default_root_dir logs --chat --gpus 1  
-  
-train_data, test_data form  
-  
-|   Q    |    A    |
-|---|---|
-|Review 1|Comment 1|
-|Review 2|Comment 2|
-|Review 3|Comment 3|
-|  ...   |   ...   |  
+```
 
-```  
+**Train_data, Test_data form** 
+  
+|     Q    |     A     |
+|:--------:|:---------:|
+| Review 1 | Comment 1 |
+| Review 2 | Comment 2 |
+| Review 3 | Comment 3 |
+| ...      | ...       |   >
 
 ## Generate  
 ```python  
@@ -35,8 +34,8 @@ import generator
 
 comment_generator = generator.KoBARTCommentGenerator(args)  
 
-# Chat form : Review -> Generate and print comment
-comment_generator.print_comment() 
+# Chat form : Review -> Generate and print comment  
+comment_generator.print_comment()  
 
-# Review file -> Generate comments and store Excel file
-comment_generator.make_comment_excel('file_path') 
+# Review file -> Generate comments and store Excel file  
+comment_generator.make_comment_excel('file_path')  
