@@ -24,11 +24,10 @@ class KoBARTCommentGenerator(model.Base):
         ctx = "cuda" if torch.cuda.is_available() else "cpu"
         device = torch.device(ctx)
 
-        print(self.hparams.model_path)
-
         kobart_model = BartForConditionalGeneration.from_pretrained("hyunwoongko/kobart")
-        checkpoint = torch.load(self.hparams.model_path, map_location=device)
-        kobart_model.load_state_dict(checkpoint['model_state_dict'])
+        # checkpoint = torch.load(self.hparams.model_path, map_location=device)
+        # kobart_model.load_state_dict(checkpoint['kobart_model.state_dict()'])
+        kobart_model.load_state_dict(torch.load(self.hparams.model_path))
         kobart_model.eval()
         kobart_model.to(device)
 
