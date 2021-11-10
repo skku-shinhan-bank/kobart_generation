@@ -21,38 +21,25 @@ import dataset
 class KoBARTCommentGenerator(model.Base):
     def __init__(self, hparams, **kwargs):
         super(KoBARTCommentGenerator, self).__init__(hparams, **kwargs)
-        self.model = BartForConditionalGeneration.from_pretrained("hyunwoongko/kobart")
-        print(self.haparms.model_path)
-        self.model = torch.load(self.hparams.model_path)
-        self.model.eval()
-        # self.model_path = ""
-        # self.max_seq_len = 128
+        ctx = "cuda" if torch.cuda.is_available() else "cpu"
+        device = torch.device(ctx)
+
+        print(self.hparams.model_path)
+
+        kobart_model = BartForConditionalGeneration.from_pretrained("hyunwoongko/kobart")
+        checkpoint = torch.load(self.hparams.model_path, map_location=device)
+        kobart_model.load_state_dict(checkpoint['model_state_dict'])
+        kobart_model.eval()
+        kobart_model.to(device)
 
         self.bos_token = '<s>'
         self.eos_token = '</s>'
         self.tokenizer = get_kobart_tokenizer()
-
-    def forward(self, inputs):
-        return self.model(input_ids=inputs['input_ids'],
-                          attention_mask=inputs['attention_mask'],
-                          decoder_input_ids=inputs['decoder_input_ids'],
-                          decoder_attention_mask=inputs['decoder_attention_mask'],
-                          labels=inputs['labels'], return_dict=True)
-
-    def training_step(self, batch, batch_idx):
-        outs = self(batch)
-        loss = outs.loss
-        self.log('train_loss', loss, prog_bar=True, on_step=True, on_epoch=True)
-        return loss
-
-    def validation_step(self, batch, batch_idx):
-        outs = self(batch)
-        loss = outs['loss']
-        self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True)
+        self.generation_model = kobart_model
 
     def chat(self, text):
         input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(text) + [self.tokenizer.eos_token_id]
-        res_ids = self.model.generate(torch.tensor([input_ids]),
+        res_ids = self.generation_model.generate(torch.tensor([input_ids]),
                                             max_length=self.hparams.max_seq_len,
                                             num_beams=5,
                                             eos_token_id=self.tokenizer.eos_token_id,
@@ -61,8 +48,6 @@ class KoBARTCommentGenerator(model.Base):
         return a.replace('<s>', '').replace('</s>', '')
 
     def print_comment(self):
-        # self.model_path = model_path
-        # self.max_seq_len = max_seq_len
         while 1:
             q = input()
             if q=='quit':
@@ -70,9 +55,6 @@ class KoBARTCommentGenerator(model.Base):
             print(self.chat(q))
     
     def make_comment_excel(self, file_path):
-        # self.model_path = model_path
-        # self.max_seq_len = max_seq_len
-
         predict_output = []
         test_data = pd.read_excel(file_path)
         for sentence in test_data['review']:
