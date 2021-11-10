@@ -14,11 +14,11 @@ from transformers import (BartForConditionalGeneration,
 from transformers.optimization import AdamW, get_cosine_schedule_with_warmup
 from kobart_transformers import get_kobart_tokenizer
 
-import model
-import dataset
+# import model
+from .model import Base
 
 
-class KoBARTCommentGenerator(model.Base):
+class KoBARTCommentGenerator(Base):
     def __init__(self, hparams, **kwargs):
         super(KoBARTCommentGenerator, self).__init__(hparams, **kwargs)
         ctx = "cuda" if torch.cuda.is_available() else "cpu"

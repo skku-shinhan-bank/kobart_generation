@@ -14,8 +14,10 @@ from transformers import (BartForConditionalGeneration,
 from transformers.optimization import AdamW, get_cosine_schedule_with_warmup
 from kobart_transformers import get_kobart_tokenizer
 
-import model
-import dataset
+# import model
+# import dataset
+from .model import Base
+from .dataset import CommentDataModule
 
 class ArgsBase():
     @staticmethod
@@ -46,7 +48,7 @@ class ArgsBase():
                             help='max seq len')
         return parser
 
-class KoBARTConditionalGeneration(model.Base):
+class KoBARTConditionalGeneration(Base):
     def __init__(self, hparams, **kwargs):
         super(KoBARTConditionalGeneration, self).__init__(hparams, **kwargs)
         self.model = BartForConditionalGeneration.from_pretrained(self.hparams.model_path)
@@ -91,16 +93,16 @@ logger.setLevel(logging.INFO)
 
 
 if __name__ == '__main__':
-    parser = model.Base.add_model_specific_args(parser)
+    parser = Base.add_model_specific_args(parser)
     parser = ArgsBase.add_model_specific_args(parser)
-    parser = dataset.CommentDataModule.add_model_specific_args(parser)
+    parser = CommentDataModule.add_model_specific_args(parser)
     parser = pl.Trainer.add_argparse_args(parser)
     args = parser.parse_args()
     logging.info(args)
 
     train_model = KoBARTConditionalGeneration(args)
 
-    dm = dataset.CommentDataModule(args.train_file,
+    dm = CommentDataModule(args.train_file,
                         args.test_file,
                         os.path.join(args.tokenizer_path, 'model.json'),
                         max_seq_len=args.max_seq_len,
