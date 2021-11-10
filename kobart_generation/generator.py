@@ -67,7 +67,7 @@ class KoBARTCommentGenerator(model.Base):
             q = input()
             if q=='quit':
                 break
-            print(self.model.chat(q))
+            print(self.chat(q))
     
     def make_comment_excel(self, model_path, max_seq_len, file_path):
         self.model_path = model_path
@@ -80,7 +80,7 @@ class KoBARTCommentGenerator(model.Base):
             cnt = cnt + 1
             print(cnt)
             row.append(sentence)
-            row.append(self.model.chat(sentence))
+            row.append(self.chat(sentence))
             predict_output.append(row)
         predict_output = pd.DataFrame(predict_output) #데이터 프레임으로 전환
         predict_output.to_excel(excel_writer='KoBART_predict_data.xlsx', encoding='utf-8') 
