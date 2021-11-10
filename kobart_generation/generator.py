@@ -57,8 +57,11 @@ class KoBARTCommentGenerator(model.Base):
                                             bad_words_ids=[[self.tokenizer.unk_token_id]])
         result = []
         for i in range(0, 3):
+            print(i)
             a = self.tokenizer.batch_decode(res_ids.tolist())[i]
             a.replace('<s>', '').replace('</s>', '')
+            print(a)
+            print("\n")
             result.append(a)
         
         print(result)
