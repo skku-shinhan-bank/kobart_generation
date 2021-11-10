@@ -31,7 +31,7 @@ class KoBARTCommentGenerator(model.Base):
         # kobart_model.load_state_dict(checkpoint['kobart_model.state_dict()'])
         # kobart_model.load_state_dict(torch.load(self.hparams.model_path))
         kobart_model.eval()
-        kobart_model.to(device)
+        # kobart_model.to(device)
 
         self.bos_token = '<s>'
         self.eos_token = '</s>'
