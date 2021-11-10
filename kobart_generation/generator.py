@@ -21,8 +21,8 @@ import dataset
 class KoBARTCommentGenerator(model.Base):
     def __init__(self, hparams, **kwargs):
         super(KoBARTCommentGenerator, self).__init__(hparams, **kwargs)
-        self.model_path
-        self.max_seq_len
+        self.model_path = "/content/drive/MyDrive/신한은행/model/KoBART_generate_model/output.pth"
+        self.max_seq_len = 128
         self.model = BartForConditionalGeneration.from_pretrained("hyunwoongko/kobart")
         self.bos_token = '<s>'
         self.eos_token = '</s>'
