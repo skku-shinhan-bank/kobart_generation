@@ -22,6 +22,7 @@ class KoBARTCommentGenerator(model.Base):
     def __init__(self, hparams, **kwargs):
         super(KoBARTCommentGenerator, self).__init__(hparams, **kwargs)
         self.model = BartForConditionalGeneration.from_pretrained("hyunwoongko/kobart")
+        print(self.haparms.model_path)
         self.model = torch.load(self.hparams.model_path)
         self.model.eval()
         # self.model_path = ""
