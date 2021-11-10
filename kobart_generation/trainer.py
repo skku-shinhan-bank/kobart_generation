@@ -122,4 +122,5 @@ if __name__ == '__main__':
     #     'model_state_dict': train_model.state_dict()
     # }, 'output.pth')
     torch.save(train_model.state_dict(), 'output.pth')
+    print(train_model.state_dict()['module.classifier.weight'])
     
