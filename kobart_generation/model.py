@@ -42,7 +42,7 @@ class Base(pl.LightningModule):
 
         parser.add_argument('--model_path',
                             type=str,
-                            default=None,
+                            default="hyunwoongko/kobart",
                             help='kobart model path')
         return parser
 
