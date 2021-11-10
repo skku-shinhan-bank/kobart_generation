@@ -44,10 +44,10 @@ class KoBARTCommentGenerator(model.Base):
                                             eos_token_id=self.tokenizer.eos_token_id,
                                             bad_words_ids=[[self.tokenizer.unk_token_id]])        
         a = self.tokenizer.batch_decode(res_ids.tolist())[0]
-        return a.replace('<usr>', '').replace('</s>', '')
+        return a.replace('<usr>', '').replace('<s>', '').replace('</s>', '')
 
     def chat_nbest(self, text):
-        input_ids =  [self.bos_token] + self.tokenizer.encode(text) + [self.eos_token]
+        input_ids =  self.bos_token + self.tokenizer.encode(text) + self.eos_token
         res_ids = self.generation_model.generate(torch.tensor([input_ids]),
                                             max_length=self.hparams.max_seq_len,
                                             num_beams=5,
