@@ -74,3 +74,29 @@ class Base(pl.LightningModule):
                         'frequency': 1}
         return [optimizer], [lr_scheduler]
 
+class KoBARTGenerationModel(Base):
+    def __init__(self, hparams, **kwargs):
+        super(KoBARTGenerationModel, self).__init__(hparams, **kwargs)
+        self.model = BartForConditionalGeneration.from_pretrained(self.hparams.model_path)
+        self.model.train()
+        self.bos_token = '<s>'
+        self.eos_token = '</s>'
+        self.tokenizer = get_kobart_tokenizer()
+
+    def forward(self, inputs):
+        return self.model(input_ids=inputs['input_ids'],
+                          attention_mask=inputs['attention_mask'],
+                          decoder_input_ids=inputs['decoder_input_ids'],
+                          decoder_attention_mask=inputs['decoder_attention_mask'],
+                          labels=inputs['labels'], return_dict=True)
+
+    def training_step(self, batch, batch_idx):
+        outs = self(batch)
+        loss = outs.loss
+        self.log('train_loss', loss, prog_bar=True, on_step=True, on_epoch=True)
+        return loss
+
+    def validation_step(self, batch, batch_idx):
+        outs = self(batch)
+        loss = outs['loss']
+        self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True)

@@ -1,4 +1,4 @@
-from .model import Base
+from .model import Base, KoBARTGenerationModel
 from .dataset import CommentDataset, CommentDataModule
-from .trainer import ArgsBase, KoBARTConditionalGeneration
+from .trainer import ArgsBase
 from .generator import KoBARTCommentGenerator
