@@ -70,9 +70,9 @@ class KoBARTGenerationTrainer():
         # self.parser = Base.add_model_specific_args(self.parser)
         # self.parser = ArgsBase.add_model_specific_args(self.parser)
         # self.parser = CommentDataModule.add_model_specific_args(self.parser)
-        # self.parser = pl.Trainer.add_argparse_args(self.parser)
-        # args = self.parser.parse_args()
-        # logging.info(args)
+        self.args = pl.Trainer.add_argparse_args(self.args)
+        self.args = self.parser.parse_args()
+        logging.info(self.args)
         print(self.args)
 
         train_model = KoBARTGenerationModel(self.args)
