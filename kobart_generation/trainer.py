@@ -48,7 +48,7 @@ class ArgsBase():
                             help='max seq len')
         return parser
 
-class KoBARTGenerationTrainer():
+class KoBARTGenerationTrainer(Base):
     def __init__(self, hparams, **kwargs):
 
         # self.parser = argparse.ArgumentParser(description='KoBART Comment Generation')
