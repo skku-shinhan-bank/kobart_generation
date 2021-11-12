@@ -25,7 +25,7 @@ class KoBARTCommentGenerator(Base):
         device = torch.device(ctx)
 
         print(self.hparams.model_path)
-        print(self.max_seq_len)
+        print(self.hparams.max_seq_len)
         print("=================")
         kobart_model = BartForConditionalGeneration.from_pretrained("hyunwoongko/kobart")
         # checkpoint = torch.load(self.hparams.model_path, map_location=device)
