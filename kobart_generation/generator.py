@@ -29,7 +29,7 @@ class KoBARTCommentGenerator(Base):
         print("=================")
 
         ckpt = torch.load(self.hparams.model_path)
-        kobart_model = KoBARTGenerationModel(Base)
+        kobart_model = KoBARTGenerationModel(self.hparams)
         # kobart_model = BartForConditionalGeneration.from_pretrained("hyunwoongko/kobart")
         kobart_model.load_state_dict(ckpt['state_dict'])
         kobart_model.model.save_pretrained("working_dir")
