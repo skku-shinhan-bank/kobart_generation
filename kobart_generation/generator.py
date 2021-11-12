@@ -35,7 +35,7 @@ class KoBARTCommentGenerator(Base):
         self.eos_token = '</s>'
         self.tokenizer = get_kobart_tokenizer()
         self.generation_model = kobart_model
-        print(self.generation_model.summary())
+        print(self.generation_model)
 
     def chat(self, text):
         input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(text) + [self.tokenizer.eos_token_id]
