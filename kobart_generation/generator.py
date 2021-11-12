@@ -24,11 +24,14 @@ class KoBARTCommentGenerator(Base):
         ctx = "cuda" if torch.cuda.is_available() else "cpu"
         device = torch.device(ctx)
 
+        print(self.hparams.model_path)
+        print(self.max_seq_len)
+        print("=================")
         kobart_model = BartForConditionalGeneration.from_pretrained("hyunwoongko/kobart")
-        checkpoint = torch.load(self.hparams.model_path, map_location=device)
+        # checkpoint = torch.load(self.hparams.model_path, map_location=device)
         # kobart_model.load_state_dict(checkpoint['state_dict'])
-        kobart_model.load_state_dict(checkpoint, strict=False)
-        # kobart_model.load_state_dict(torch.load(self.hparams.model_path))
+        # kobart_model.load_state_dict(checkpoint, strict=False)
+        kobart_model.load_state_dict(torch.load(self.hparams.model_path))
         kobart_model.eval()
 
         self.bos_token = '<s>'
@@ -45,7 +48,9 @@ class KoBARTCommentGenerator(Base):
                                             eos_token_id=self.tokenizer.eos_token_id,
                                             bad_words_ids=[[self.tokenizer.unk_token_id]])        
         a = self.tokenizer.batch_decode(res_ids.tolist())[0]
-        return a.replace('<usr>', '').replace('<s>', '').replace('</s>', '')
+        # return a.replace('<usr>', '').replace('<s>', '').replace('</s>', '')
+        return a.replace('<s>', '').replace('</s>', '')
+
 
     def chat_nbest(self, text):
         input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(text) + [self.tokenizer.eos_token_id]
