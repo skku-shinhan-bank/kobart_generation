@@ -50,7 +50,7 @@ class ArgsBase():
 
 class KoBARTGenerationTrainer():
     def __init__(self, hparams, **kwargs):
-        
+
         # self.parser = argparse.ArgumentParser(description='KoBART Comment Generation')
 
         # self.parser.add_argument('--checkpoint_path',
@@ -73,6 +73,7 @@ class KoBARTGenerationTrainer():
         # self.parser = pl.Trainer.add_argparse_args(self.parser)
         # args = self.parser.parse_args()
         # logging.info(args)
+        print(self.hparams)
 
         train_model = KoBARTGenerationModel(self.hparams)
 
