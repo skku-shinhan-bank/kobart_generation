@@ -83,14 +83,13 @@ class KoBARTGenerationTrainer():
                             max_seq_len=self.args.max_seq_len,
                             num_workers=self.args.num_workers)
         checkpoint_callback = pl.callbacks.ModelCheckpoint(monitor='val_loss',
-                                                            dirpath=self.args.default_root_dir,
                                                             filename='model_chp/{epoch:02d}-{val_loss:.3f}',
                                                             verbose=True,
                                                             save_last=True,
                                                             mode='min',
                                                             save_top_k=-1
                                                             )
-        tb_logger = pl_loggers.TensorBoardLogger(os.path.join(self.args.default_root_dir, 'tb_logs'))
+        tb_logger = pl_loggers.TensorBoardLogger(os.path.join('tb_logs'))
         lr_logger = pl.callbacks.LearningRateMonitor()
         trainer = pl.Trainer.from_argparse_args(self.args, logger=tb_logger,
                                                 callbacks=[checkpoint_callback, lr_logger])
