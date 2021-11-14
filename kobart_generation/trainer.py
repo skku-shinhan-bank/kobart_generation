@@ -14,8 +14,10 @@ from transformers import (BartForConditionalGeneration,
 from transformers.optimization import AdamW, get_cosine_schedule_with_warmup
 from kobart_transformers import get_kobart_tokenizer
 
-import model
-import dataset
+# import model
+# import dataset
+from .model import Base, KoBARTGenerationModel
+from .dataset import CommentDataModule
 
 class ArgsBase():
     @staticmethod
@@ -46,81 +48,63 @@ class ArgsBase():
                             help='max seq len')
         return parser
 
-class KoBARTConditionalGeneration(model.Base):
-    def __init__(self, hparams, **kwargs):
-        super(KoBARTConditionalGeneration, self).__init__(hparams, **kwargs)
-        self.model = BartForConditionalGeneration.from_pretrained(self.hparams.model_path)
-        self.model.train()
-        self.bos_token = '<s>'
-        self.eos_token = '</s>'
-        self.tokenizer = get_kobart_tokenizer()
+class KoBARTGenerationTrainer():
+    def __init__(self, args):
+        self.args=args
+        # self.parser = argparse.ArgumentParser(description='KoBART Comment Generation')
 
-    def forward(self, inputs):
-        return self.model(input_ids=inputs['input_ids'],
-                          attention_mask=inputs['attention_mask'],
-                          decoder_input_ids=inputs['decoder_input_ids'],
-                          decoder_attention_mask=inputs['decoder_attention_mask'],
-                          labels=inputs['labels'], return_dict=True)
+        # self.parser.add_argument('--checkpoint_path',
+        #                     type=str,
+        #                     help='checkpoint path')
 
-    def training_step(self, batch, batch_idx):
-        outs = self(batch)
-        loss = outs.loss
-        self.log('train_loss', loss, prog_bar=True, on_step=True, on_epoch=True)
-        return loss
+        # self.parser.add_argument('--chat',
+        #                     action='store_true',
+        #                     default=False,
+        #                     help='response generation on given user input')
 
-    def validation_step(self, batch, batch_idx):
-        outs = self(batch)
-        loss = outs['loss']
-        self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True)
+        # self.parser = self.hparams
+        logger = logging.getLogger()
+        logger.setLevel(logging.INFO)
+
+    def train(self):
+        # self.parser = Base.add_model_specific_args(self.parser)
+        # self.parser = ArgsBase.add_model_specific_args(self.parser)
+        # self.parser = CommentDataModule.add_model_specific_args(self.parser)
+        # self.args = pl.Trainer.add_argparse_args(self.args)
+        # self.args = self.args.parse_args()
+        logging.info(self.args)
+        print(self.args)
+
+        train_model = KoBARTGenerationModel(self.args)
+
+        dm = CommentDataModule(self.args.train_file,
+                            self.args.test_file,
+                            os.path.join(self.args.tokenizer_path, 'model.json'),
+                            max_seq_len=self.args.max_seq_len,
+                            num_workers=self.args.num_workers)
+        checkpoint_callback = pl.callbacks.ModelCheckpoint(monitor='val_loss',
+                                                            filename='model_chp/{epoch:02d}-{val_loss:.3f}',
+                                                            verbose=True,
+                                                            save_last=True,
+                                                            mode='min',
+                                                            save_top_k=-1
+                                                            )
+        tb_logger = pl_loggers.TensorBoardLogger(os.path.join('tb_logs'))
+        lr_logger = pl.callbacks.LearningRateMonitor()
+        trainer = pl.Trainer.from_argparse_args(self.args, logger=tb_logger,
+                                                callbacks=[checkpoint_callback, lr_logger])
+        trainer.fit(train_model, dm)   
+
+        train_model.model.eval()
+        text=input()
+        print(train_model.chat(text))
+
+        torch.save({
+            'model_state_dict': train_model.state_dict()
+        }, 'output.pth')
+        # torch.save(train_model.state_dict(), 'output.pth')
+        print(train_model)
+        
 
 
-
-parser = argparse.ArgumentParser(description='KoBART Comment Generation')
-
-parser.add_argument('--checkpoint_path',
-                    type=str,
-                    help='checkpoint path')
-
-parser.add_argument('--chat',
-                    action='store_true',
-                    default=False,
-                    help='response generation on given user input')
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
-
-if __name__ == '__main__':
-    parser = model.Base.add_model_specific_args(parser)
-    parser = ArgsBase.add_model_specific_args(parser)
-    parser = dataset.CommentDataModule.add_model_specific_args(parser)
-    parser = pl.Trainer.add_argparse_args(parser)
-    args = parser.parse_args()
-    logging.info(args)
-
-    train_model = KoBARTConditionalGeneration(args)
-
-    dm = dataset.CommentDataModule(args.train_file,
-                        args.test_file,
-                        os.path.join(args.tokenizer_path, 'model.json'),
-                        max_seq_len=args.max_seq_len,
-                        num_workers=args.num_workers)
-    checkpoint_callback = pl.callbacks.ModelCheckpoint(monitor='val_loss',
-                                                       dirpath=args.default_root_dir,
-                                                       filename='model_chp/{epoch:02d}-{val_loss:.3f}',
-                                                       verbose=True,
-                                                       save_last=True,
-                                                       mode='min',
-                                                       save_top_k=-1
-                                                       )
-    tb_logger = pl_loggers.TensorBoardLogger(os.path.join(args.default_root_dir, 'tb_logs'))
-    lr_logger = pl.callbacks.LearningRateMonitor()
-    trainer = pl.Trainer.from_argparse_args(args, logger=tb_logger,
-                                            callbacks=[checkpoint_callback, lr_logger])
-    trainer.fit(train_model, dm)
-    # torch.save({
-    #     'model_state_dict': train_model.state_dict()
-    # }, 'output.pth')
-    torch.save(train_model.state_dict(), 'output.pth')
-    print(train_model)
     

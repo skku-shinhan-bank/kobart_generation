@@ -74,3 +74,39 @@ class Base(pl.LightningModule):
                         'frequency': 1}
         return [optimizer], [lr_scheduler]
 
+class KoBARTGenerationModel(Base):
+    def __init__(self, hparams, **kwargs):
+        super(KoBARTGenerationModel, self).__init__(hparams, **kwargs)
+        self.model = BartForConditionalGeneration.from_pretrained("hyunwoongko/kobart")
+        self.model.train()
+        self.bos_token = '<s>'
+        self.eos_token = '</s>'
+        self.tokenizer = get_kobart_tokenizer()
+
+    def forward(self, inputs):
+        return self.model(input_ids=inputs['input_ids'],
+                          attention_mask=inputs['attention_mask'],
+                          decoder_input_ids=inputs['decoder_input_ids'],
+                          decoder_attention_mask=inputs['decoder_attention_mask'],
+                          labels=inputs['labels'], return_dict=True)
+
+    def training_step(self, batch, batch_idx):
+        outs = self(batch)
+        loss = outs.loss
+        self.log('train_loss', loss, prog_bar=True, on_step=True, on_epoch=True)
+        return loss
+
+    def validation_step(self, batch, batch_idx):
+        outs = self(batch)
+        loss = outs['loss']
+        self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True)
+
+    def chat(self, text):
+        input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(text) + [self.tokenizer.eos_token_id]
+        res_ids = self.model.generate(torch.tensor([input_ids]),
+                                            max_length=self.hparams.max_seq_len,
+                                            num_beams=5,
+                                            eos_token_id=self.tokenizer.eos_token_id,
+                                            bad_words_ids=[[self.tokenizer.unk_token_id]])        
+        a = self.tokenizer.batch_decode(res_ids.tolist())[0]
+        return a.replace('<s>', '').replace('</s>', '')
