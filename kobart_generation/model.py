@@ -77,7 +77,7 @@ class Base(pl.LightningModule):
 class KoBARTGenerationModel(Base):
     def __init__(self, hparams, **kwargs):
         super(KoBARTGenerationModel, self).__init__(hparams, **kwargs)
-        self.model = BartForConditionalGeneration.from_pretrained(self.hparams.model_path)
+        self.model = BartForConditionalGeneration.from_pretrained("hyunwoongko/kobart")
         self.model.train()
         self.bos_token = '<s>'
         self.eos_token = '</s>'
@@ -110,4 +110,3 @@ class KoBARTGenerationModel(Base):
                                             bad_words_ids=[[self.tokenizer.unk_token_id]])        
         a = self.tokenizer.batch_decode(res_ids.tolist())[0]
         return a.replace('<s>', '').replace('</s>', '')
-        

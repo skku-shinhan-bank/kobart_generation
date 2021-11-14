@@ -15,7 +15,7 @@ from transformers.optimization import AdamW, get_cosine_schedule_with_warmup
 from kobart_transformers import get_kobart_tokenizer
 
 # import model
-from .model import Base
+from .model import Base, KoBARTGenerationModel
 
 
 class KoBARTCommentGenerator(Base):
@@ -29,7 +29,9 @@ class KoBARTCommentGenerator(Base):
         print("=================")
 
         ckpt = torch.load(self.hparams.model_path)
-        kobart_model = BartForConditionalGeneration.from_pretrained("hyunwoongko/kobart")
+        # kobart_model = BartForConditionalGeneration.from_pretrained("hyunwoongko/kobart")
+        kobart_model= KoBARTGenerationModel(self.hparams)
+
         kobart_model.load_state_dict(ckpt['model_state_dict'])
         # kobart_model.model.save_pretrained("working_dir")
         # checkpoint = torch.load(self.hparams.model_path, map_location=device)
