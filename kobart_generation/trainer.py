@@ -93,12 +93,18 @@ class KoBARTGenerationTrainer():
         lr_logger = pl.callbacks.LearningRateMonitor()
         trainer = pl.Trainer.from_argparse_args(self.args, logger=tb_logger,
                                                 callbacks=[checkpoint_callback, lr_logger])
-        trainer.fit(train_model, dm)
+        trainer.fit(train_model, dm)   
+
+        train_model.model.eval()
+        text=input()
+        print(train_model.chat(text))
+
         torch.save({
             'model_state_dict': train_model.state_dict()
         }, 'output.pth')
         # torch.save(train_model.state_dict(), 'output.pth')
         print(train_model)
+        
 
 
     
