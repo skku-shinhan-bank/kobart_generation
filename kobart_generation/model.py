@@ -19,33 +19,6 @@ class Base(pl.LightningModule):
         super(Base, self).__init__()
         self.save_hyperparameters(hparams)
 
-    @staticmethod
-    def add_model_specific_args(parent_parser):
-        # add model specific args
-        parser = argparse.ArgumentParser(
-            parents=[parent_parser], add_help=False)
-
-        parser.add_argument('--batch-size',
-                            type=int,
-                            default=14,
-                            help='batch size for training (default: 96)')
-
-        parser.add_argument('--lr',
-                            type=float,
-                            default=5e-5,
-                            help='The initial learning rate')
-
-        parser.add_argument('--warmup_ratio',
-                            type=float,
-                            default=0.1,
-                            help='warmup ratio')
-
-        parser.add_argument('--model_path',
-                            type=str,
-                            default="hyunwoongko/kobart",
-                            help='kobart model path')
-        return parser
-
     def configure_optimizers(self):
         # Prepare optimizer
         param_optimizer = list(self.model.named_parameters())

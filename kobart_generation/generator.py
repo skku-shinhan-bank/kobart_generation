@@ -14,9 +14,7 @@ from transformers import (BartForConditionalGeneration,
 from transformers.optimization import AdamW, get_cosine_schedule_with_warmup
 from kobart_transformers import get_kobart_tokenizer
 
-# import model
 from .model import Base, KoBARTGenerationModel
-
 
 class KoBARTCommentGenerator(Base):
     def __init__(self, hparams, **kwargs):
@@ -29,16 +27,9 @@ class KoBARTCommentGenerator(Base):
         print("=================")
 
         ckpt = torch.load(self.hparams.model_path)
-        # kobart_model = BartForConditionalGeneration.from_pretrained("hyunwoongko/kobart")
-        kobart_model= KoBARTGenerationModel(self.hparams)
 
+        kobart_model= KoBARTGenerationModel(self.hparams)
         kobart_model.load_state_dict(ckpt['model_state_dict'])
-        # kobart_model.model.save_pretrained("working_dir")
-        # checkpoint = torch.load(self.hparams.model_path, map_location=device)
-        # kobart_model.load_state_dict(checkpoint['state_dict'])
-        # kobart_model.load_state_dict(ckpt)
-        # kobart_model.load_state_dict(checkpoint, strict=False)
-        # kobart_model.load_state_dict(torch.load(self.hparams.model_path))
         kobart_model.eval()
 
         self.bos_token = '<s>'
@@ -46,9 +37,6 @@ class KoBARTCommentGenerator(Base):
         self.tokenizer = get_kobart_tokenizer()
         self.generation_model = kobart_model
         print(self.generation_model)
-
-    def print_nbest_comment(self, review):
-        self.generation_model.chat_nbest(review)
 
     def print_comment(self):
         while 1:
@@ -70,3 +58,5 @@ class KoBARTCommentGenerator(Base):
         predict_output = pd.DataFrame(predict_output) #데이터 프레임으로 전환
         predict_output.to_excel(excel_writer='KoBART_predict_data.xlsx', encoding='utf-8') 
 
+    def print_nbest_comment(self, review):
+        self.generation_model.chat_nbest(review)

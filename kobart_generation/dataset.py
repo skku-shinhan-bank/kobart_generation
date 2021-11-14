@@ -77,16 +77,6 @@ class CommentDataModule(pl.LightningDataModule):
         self.tok_vocab = tok_vocab
         self.num_workers = num_workers
 
-    @staticmethod
-    def add_model_specific_args(parent_parser):
-        parser = argparse.ArgumentParser(
-            parents=[parent_parser], add_help=False)
-        parser.add_argument('--num_workers',
-                            type=int,
-                            default=5,
-                            help='num of worker for dataloader')
-        return parser
-
     # OPTIONAL, called for every GPU/machine (assigning state is OK)
     def setup(self, stage):
         # split dataset
