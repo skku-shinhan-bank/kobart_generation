@@ -47,18 +47,6 @@ class KoBARTCommentGenerator(Base):
         self.generation_model = kobart_model
         print(self.generation_model)
 
-    # def chat(self, text):
-    #     input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(text) + [self.tokenizer.eos_token_id]
-    #     res_ids = self.generation_model.generate(torch.tensor([input_ids]),
-    #                                         max_length=self.hparams.max_seq_len,
-    #                                         num_beams=5,
-    #                                         eos_token_id=self.tokenizer.eos_token_id,
-    #                                         bad_words_ids=[[self.tokenizer.unk_token_id]])        
-    #     a = self.tokenizer.batch_decode(res_ids.tolist())[0]
-    #     # return a.replace('<usr>', '').replace('<s>', '').replace('</s>', '')
-    #     return a.replace('<s>', '').replace('</s>', '')
-
-
     # def chat_nbest(self, text):
     #     input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(text) + [self.tokenizer.eos_token_id]
     #     res_ids = self.generation_model.generate(torch.tensor([input_ids]),
@@ -86,16 +74,16 @@ class KoBARTCommentGenerator(Base):
                 break
             print(self.generation_model.chat(q))
     
-    # def make_comment_excel(self, file_path):
-    #     predict_output = []
-    #     test_data = pd.read_excel(file_path)
-    #     for sentence in test_data['review']:
-    #         row = []
-    #         cnt = cnt + 1
-    #         print(cnt)
-    #         row.append(sentence)
-    #         row.append(self.chat(sentence))
-    #         predict_output.append(row)
-    #     predict_output = pd.DataFrame(predict_output) #데이터 프레임으로 전환
-    #     predict_output.to_excel(excel_writer='KoBART_predict_data.xlsx', encoding='utf-8') 
+    def make_comment_excel(self, file_path):
+        predict_output = []
+        test_data = pd.read_excel(file_path)
+        for sentence in test_data['review']:
+            row = []
+            cnt = cnt + 1
+            print(cnt)
+            row.append(sentence)
+            row.append(self.generation_model.chat(sentence))
+            predict_output.append(row)
+        predict_output = pd.DataFrame(predict_output) #데이터 프레임으로 전환
+        predict_output.to_excel(excel_writer='KoBART_predict_data.xlsx', encoding='utf-8') 
 
