@@ -113,7 +113,7 @@ class KoBARTGenerationModel(Base):
 
     def chat_nbest(self, text):
         input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(text) + [self.tokenizer.eos_token_id]
-        res_ids = self.generation_model.generate(torch.tensor([input_ids]),
+        res_ids = self.model.generate(torch.tensor([input_ids]),
                                             max_length=self.hparams.max_seq_len,
                                             num_beams=5,
                                             eos_token_id=self.tokenizer.eos_token_id,
@@ -129,4 +129,3 @@ class KoBARTGenerationModel(Base):
             result.append(a)
         print(result)
         return result
-        

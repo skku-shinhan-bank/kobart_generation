@@ -47,26 +47,6 @@ class KoBARTCommentGenerator(Base):
         self.generation_model = kobart_model
         print(self.generation_model)
 
-    # def chat_nbest(self, text):
-    #     input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(text) + [self.tokenizer.eos_token_id]
-    #     res_ids = self.generation_model.generate(torch.tensor([input_ids]),
-    #                                         max_length=self.hparams.max_seq_len,
-    #                                         num_beams=5,
-    #                                         eos_token_id=self.tokenizer.eos_token_id,
-    #                                         bad_words_ids=[[self.tokenizer.unk_token_id]])
-    #     result = []
-    #     for i in range(0, 3):
-    #         print(i)
-    #         print(self.tokenizer.batch_decode(res_ids.tolist()))
-    #         a = self.tokenizer.batch_decode(res_ids.tolist())[0]
-    #         a.replace('<usr>', '').replace('<s>', '').replace('</s>', '')
-    #         print(a)
-    #         print("\n")
-    #         result.append(a)
-        
-    #     print(result)
-    #     return result
-
     def print_nbest_comment(self, review):
         self.generation_model.chat_nbest(review)
 
