@@ -55,12 +55,7 @@ args = easydict.EasyDict({
 
 from kobart_generation import KoBARTCommentGenerator
 
-<<<<<<< HEAD
 comment_generator = KoBARTCommentGenerator(args)
-=======
-comment_generator = KoBARTCommentGenerator(args)  
->>>>>>> 93a92a294f5458ef9cd7ea499ae44a9531e1772f
-
 # Chat form : Review -> Generate and print comment  
 comment_generator.print_comment()  
 
