@@ -32,9 +32,6 @@ class KoBARTCommentGenerator(Base):
         kobart_model.load_state_dict(ckpt['model_state_dict'])
         kobart_model.eval()
 
-        self.bos_token = '<s>'
-        self.eos_token = '</s>'
-        self.tokenizer = get_kobart_tokenizer()
         self.generation_model = kobart_model
         print(self.generation_model)
 
