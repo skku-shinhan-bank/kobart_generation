@@ -127,3 +127,6 @@ class KoBARTGenerationModel(Base):
             print(a)
             print("\n")
             result.append(a)
+        print(result)
+        return result
+        

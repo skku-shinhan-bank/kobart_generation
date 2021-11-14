@@ -67,6 +67,9 @@ class KoBARTCommentGenerator(Base):
     #     print(result)
     #     return result
 
+    def print_nbest_comment(self, review):
+        self.generation_model.chat_nbest(review)
+
     def print_comment(self):
         while 1:
             q = input()
