@@ -6,7 +6,7 @@ pip install git+https://github.com/skku-shinhan-bank/koelectra_classification.gi
 ```    
 ## Train  
 ```python  
-pip install torch torchvision torchaudio -f https://download.pytorch.org/whl/torch_stable.html pytorch_lightning == 1.4.9
+pip install torch torchvision torchaudio -f https://download.pytorch.org/whl/torch_stable.html pytorch_lightning==1.4.9
 
 from kobart_generation import KoBARTGenerationTrainer
 
