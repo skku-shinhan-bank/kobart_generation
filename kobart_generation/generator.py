@@ -42,6 +42,13 @@ class KoBARTCommentGenerator(Base):
                 break
             print(self.generation_model.chat(q))
     
+    def print_nbest_comment(self):
+        while 1:
+            q = input()
+            if q=='quit':
+                break
+            print(self.generation_model.chat_nbest(q))
+
     def make_comment_excel(self, file_path):
         predict_output = []
         test_data = pd.read_excel(file_path)
