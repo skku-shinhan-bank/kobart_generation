@@ -89,6 +89,7 @@ class KoBARTGenerationModel(Base):
         res_ids = self.model.generate(torch.tensor([input_ids]),
                                             max_length=self.hparams.max_seq_len,
                                             num_beams=5,
+                                            num_return_sequences=3,
                                             eos_token_id=self.tokenizer.eos_token_id,
                                             bad_words_ids=[[self.tokenizer.unk_token_id]])
         result = []
