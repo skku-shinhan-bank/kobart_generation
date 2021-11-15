@@ -63,5 +63,3 @@ class KoBARTCommentGenerator(Base):
         predict_output = pd.DataFrame(predict_output) #데이터 프레임으로 전환
         predict_output.to_excel(excel_writer='KoBART_predict_data.xlsx', encoding='utf-8') 
 
-    def print_nbest_comment(self, review):
-        self.generation_model.chat_nbest(review)
