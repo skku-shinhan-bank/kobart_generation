@@ -95,6 +95,7 @@ class KoBARTGenerationModel(Base):
                                             eos_token_id=self.tokenizer.eos_token_id,
                                             bad_words_ids=[[self.tokenizer.unk_token_id]])
         print(self.tokenizer.batch_decode(res_ids))
+        print(res_ids.scores)
         return  res_ids
         # result = []
         # for i in range(0, 3):
