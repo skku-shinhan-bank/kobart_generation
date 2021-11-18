@@ -97,9 +97,9 @@ class KoBARTGenerationModel(Base):
                                             bad_words_ids=[[self.tokenizer.unk_token_id]])
 
         print(self.tokenizer.batch_decode(res_ids))
-        print("============")
-        gen_ids=res_ids["sequences"][0, input_ids.shape[-1]:]
-        print(res_ids["scores"][0][0, gen_ids[0]].tolist())
+        # print("============")
+        # gen_ids=res_ids["sequences"][0, input_ids.shape[-1]:]
+        # print(res_ids["scores"][0][0, gen_ids[0]].tolist())
 
         return  res_ids
         # result = []
