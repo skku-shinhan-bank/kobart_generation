@@ -94,14 +94,16 @@ class KoBARTGenerationModel(Base):
                                             num_return_sequences=3,
                                             eos_token_id=self.tokenizer.eos_token_id,
                                             bad_words_ids=[[self.tokenizer.unk_token_id]])
-        result = []
-        for i in range(0, 3):
-            print(i)
-            # print(self.tokenizer.batch_decode(res_ids.tolist()))
-            a = self.tokenizer.batch_decode(res_ids.tolist())[i]
-            # a.replace('<usr>', '').replace('<s>', '').replace('</s>', '')
-            print(a)
-            print("\n")
-            result.append(a)
-        # print(result)
-        return result
+        print(res_ids)
+        return  res_ids
+        # result = []
+        # for i in range(0, 3):
+        #     print(i)
+        #     # print(self.tokenizer.batch_decode(res_ids.tolist()))
+        #     a = self.tokenizer.batch_decode(res_ids.tolist())[i]
+        #     # a.replace('<usr>', '').replace('<s>', '').replace('</s>', '')
+        #     print(a)
+        #     print("\n")
+        #     result.append(a)
+        # # print(result)
+        # return result
