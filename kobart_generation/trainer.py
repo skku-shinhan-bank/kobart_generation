@@ -56,5 +56,4 @@ class KoBARTGenerationTrainer():
             'model_state_dict': train_model.state_dict()
         }, 'output.pth')
         
-        print(train_model)
     
