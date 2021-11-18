@@ -94,15 +94,10 @@ class KoBARTGenerationModel(Base):
                                             num_return_sequences=3,
                                             eos_token_id=self.tokenizer.eos_token_id,
                                             bad_words_ids=[[self.tokenizer.unk_token_id]])
-<<<<<<< HEAD
         beam_score = self.model.BeamScorer
         
         print(self.tokenizer.batch_decode(res_ids), beam_score)
         
-=======
-        print(self.tokenizer.batch_decode(res_ids))
-        print(res_ids.scores)
->>>>>>> ac9e60e1e1d3243ad883d3c1f1cd0b4813efe4b3
         return  res_ids
         # result = []
         # for i in range(0, 3):
