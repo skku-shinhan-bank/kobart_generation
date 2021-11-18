@@ -4,6 +4,7 @@ import os
 
 import numpy as np
 import pandas as pd
+from transformers.utils.dummy_pt_objects import BeamScorer
 import pytorch_lightning as pl
 import torch
 import transformers
@@ -89,6 +90,7 @@ class KoBARTGenerationModel(Base):
         res_ids = self.model.generate(torch.tensor([input_ids]),
                                             max_length=self.hparams.max_seq_len,
                                             num_beams=5,
+                                            output_scores=True,
                                             num_return_sequences=3,
                                             eos_token_id=self.tokenizer.eos_token_id,
                                             bad_words_ids=[[self.tokenizer.unk_token_id]])
@@ -97,7 +99,7 @@ class KoBARTGenerationModel(Base):
             print(i)
             # print(self.tokenizer.batch_decode(res_ids.tolist()))
             a = self.tokenizer.batch_decode(res_ids.tolist())[i]
-            a.replace('<usr>', '').replace('<s>', '').replace('</s>', '')
+            # a.replace('<usr>', '').replace('<s>', '').replace('</s>', '')
             print(a)
             print("\n")
             result.append(a)
