@@ -49,8 +49,6 @@ class KoBARTGenerationTrainer():
         trainer.fit(train_model, dm)   
 
         train_model.model.eval()
-        text=input()
-        print(train_model.chat(text))
 
         torch.save({
             'model_state_dict': train_model.state_dict()
