@@ -76,7 +76,7 @@ class KoBARTGenerationModel(Base):
         self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True)
 
     def chat(self, text, issue_id):
-        input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(issue_id+' '+text) + [self.tokenizer.eos_token_id]
+        input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(str(issue_id)+' '+text) + [self.tokenizer.eos_token_id]
         res_ids = self.model.generate(torch.tensor([input_ids]),
                                             max_length=self.hparams.max_seq_len,
                                             num_beams=5,
@@ -86,7 +86,7 @@ class KoBARTGenerationModel(Base):
         return a.replace(self.tokenizer.bos_token_id, '').replace(self.tokenizer.eos_token_id, '')
 
     def chat_nbest(self, text, issue_id):
-        input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(issue_id+' '+text) + [self.tokenizer.eos_token_id]
+        input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(str(issue_id)+' '+text) + [self.tokenizer.eos_token_id]
         res_ids = self.model.generate(torch.tensor([input_ids]),
                                             max_length=self.hparams.max_seq_len,
                                             num_beams=5,
