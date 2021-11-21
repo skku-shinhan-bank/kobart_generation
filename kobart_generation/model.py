@@ -75,18 +75,18 @@ class KoBARTGenerationModel(Base):
         loss = outs['loss']
         self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True)
 
-    def chat(self, text):
-        input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(text) + [self.tokenizer.eos_token_id]
+    def chat(self, text, issue_id):
+        input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(issue_id+' '+text) + [self.tokenizer.eos_token_id]
         res_ids = self.model.generate(torch.tensor([input_ids]),
                                             max_length=self.hparams.max_seq_len,
                                             num_beams=5,
                                             eos_token_id=self.tokenizer.eos_token_id,
                                             bad_words_ids=[[self.tokenizer.unk_token_id]])        
         a = self.tokenizer.batch_decode(res_ids.tolist())[0]
-        return a.replace('<s>', '').replace('</s>', '')
+        return a.replace(self.tokenizer.bos_token_id, '').replace(self.tokenizer.eos_token_id, '')
 
-    def chat_nbest(self, text):
-        input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(text) + [self.tokenizer.eos_token_id]
+    def chat_nbest(self, text, issue_id):
+        input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(issue_id+' '+text) + [self.tokenizer.eos_token_id]
         res_ids = self.model.generate(torch.tensor([input_ids]),
                                             max_length=self.hparams.max_seq_len,
                                             num_beams=5,
@@ -97,9 +97,9 @@ class KoBARTGenerationModel(Base):
                                             bad_words_ids=[[self.tokenizer.unk_token_id]])
 
         print(self.tokenizer.batch_decode(res_ids))
-        print("============")
-        gen_ids=res_ids["sequences"][0, input_ids.shape[-1]:]
-        print(res_ids["scores"][0][0, gen_ids[0]].tolist())
+        #print("============")
+        #gen_ids=res_ids["sequences"][0, input_ids.shape[-1]:]
+        #print(res_ids["scores"][0][0, gen_ids[0]].tolist())
 
         return  res_ids
         # result = []
