@@ -83,7 +83,7 @@ class KoBARTGenerationModel(Base):
                                             eos_token_id=self.tokenizer.eos_token_id,
                                             bad_words_ids=[[self.tokenizer.unk_token_id]])        
         a = self.tokenizer.batch_decode(res_ids.tolist())[0]
-        return a.replace(self.tokenizer.bos_token_id, '').replace(self.tokenizer.eos_token_id, '')
+        return a.replace('<usr>', '')
 
     def chat_nbest(self, text, issue_id):
         input_ids =  [self.tokenizer.bos_token_id] + self.tokenizer.encode(str(issue_id)+' '+text) + [self.tokenizer.eos_token_id]
