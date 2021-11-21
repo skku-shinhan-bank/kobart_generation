@@ -50,14 +50,17 @@ import easydict
 
 args = easydict.EasyDict({
     'model_path':'model_path.pth',
-    'max_seq_len': 128
+    'max_seq_len': 256
 })
 
 from kobart_generation import KoBARTCommentGenerator
 
 comment_generator = KoBARTCommentGenerator(args)
 # Chat form : Review -> Generate and print comment  
-comment_generator.print_comment()  
+comment_generator.print_comment('review', issue_id)  
+
+# Chat form : Review -> Generate and print n-best comments  
+comment_generator.print_nbest_comment('review', issue_id)  
 
 # Review file -> Generate comments and store Excel file  
 comment_generator.make_comment_excel('reveiws.xlsx')  
