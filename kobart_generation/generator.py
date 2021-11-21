@@ -36,12 +36,14 @@ class KoBARTCommentGenerator(Base):
         predict_output = []
         test_data = pd.read_excel(file_path)
         cnt=0
-        for sentence in test_data['review']:
+        for i in range(test_data):
+            sentence = test_data['review'][i]
+            issue_id = test_data['issue_id'][i]
             row = []
             cnt = cnt + 1
             print(cnt)
             row.append(sentence)
-            row.append(self.generation_model.chat(sentence))
+            row.append(self.generation_model.chat(sentence, issue_id))
             predict_output.append(row)
         predict_output = pd.DataFrame(predict_output) #데이터 프레임으로 전환
         predict_output.to_excel(excel_writer='KoBART_predict_data.xlsx', encoding='utf-8') 

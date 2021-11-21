@@ -53,7 +53,7 @@ class KoBARTGenerationModel(Base):
         super(KoBARTGenerationModel, self).__init__(hparams, **kwargs)
         self.model = BartForConditionalGeneration.from_pretrained("hyunwoongko/kobart")
         self.model.train()
-        self.bos_token = '<s>'
+        self.bos_token = '<usr>'
         self.eos_token = '</s>'
         self.tokenizer = get_kobart_tokenizer()
 
