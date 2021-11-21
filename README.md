@@ -35,12 +35,12 @@ trainer.train()
   
 **Train_data, Test_data form**  
   
-|     Q    |     A     |
-|:--------:|:---------:|
-| Review 1 | Comment 1 |
-| Review 2 | Comment 2 |
-| Review 3 | Comment 3 |
-| ...      | ...       |  
+|  review  |  comment  |  issue_id |
+|:--------:|:---------:|:---------:| 
+| Review 1 | Comment 1 |     0     | 
+| Review 2 | Comment 2 |     1     |
+| Review 3 | Comment 3 |     2     |
+| ...      | ...       | ...       |  
   
 ## Generate  
 ```python  
