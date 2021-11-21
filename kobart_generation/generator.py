@@ -26,11 +26,11 @@ class KoBARTCommentGenerator(Base):
         kobart_model.eval()
         self.generation_model = kobart_model
 
-    def print_comment(self, review):
-        print(self.generation_model.chat(review))
+    def print_comment(self, review, issue_id):
+        print(self.generation_model.chat(review, issue_id))
     
-    def print_nbest_comment(self, review):
-        print(self.generation_model.chat_nbest(review))
+    def print_nbest_comment(self, review, issue_id):
+        print(self.generation_model.chat_nbest(review, issue_id))
 
     def make_comment_excel(self, file_path):
         predict_output = []
