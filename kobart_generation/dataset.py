@@ -46,10 +46,6 @@ class CommentDataset(Dataset):
             self.tokenizer.tokenize(str(id)+' '+q) + [self.eos_token]
         a_tokens = [self.bos_token] + \
             self.tokenizer.tokenize(a) + [self.eos_token]
-
-        print(q_tokens)
-        print(a_tokens)
-
         encoder_input_id, encoder_attention_mask = self.make_input_id_mask(
             q_tokens, index)
         decoder_input_id, decoder_attention_mask = self.make_input_id_mask(
