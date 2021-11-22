@@ -96,14 +96,24 @@ class KoBARTGenerationModel(Base):
                                             eos_token_id=self.tokenizer.eos_token_id,
                                             bad_words_ids=[[self.tokenizer.unk_token_id]])
 
-        logits = self.model(res_ids).logits
-        probs = logits[0].softmax(dim=0)
-        values, predictions = probs.topk(3)
-        self.tokenizer.decode(predictions).split()
-        print("probs>>>")
-        print(probs)
-        print("logits>>>")
-        print(logits)
+        gen_sequences = res_ids.sequences[:, input_ids.shape[-1]:]
+        probs = torch.stack(res_ids.socres, dim=1).softmax(-1)
+        gen_probs = torch.gather(probs, 2, gen_sequences[:, :, None])
+        unique_prob_per_sequence = gen_probs.prod(-1)
+        normed_gen_probs = gen_probs / gen_probs.sum(0)
+        assert normed_gen_probs[:, 0].sum() == 1.0, "probs should be normalized"
+        unique_normed_prob_per_sequence = normed_gen_probs.prod(-1)
+        print(unique_normed_prob_per_sequence)
+        # logits = self.model(res_ids).logits
+        # probs = logits[0].softmax(dim=0)
+        # values, predictions = probs.topk(3)
+        # self.tokenizer.decode(predictions).split()
+        # print("probs>>>")
+        # print(probs)
+        # print("logits>>>")
+        # print(logits)
+
+
         #print("============")
         #gen_ids=res_ids["sequences"][0, input_ids.shape[-1]:]
         #print(res_ids["scores"][0][0, gen_ids[0]].tolist())
