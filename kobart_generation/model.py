@@ -91,20 +91,23 @@ class KoBARTGenerationModel(Base):
                                             max_length=self.hparams.max_seq_len,
                                             num_beams=5,
                                             output_scores=True,
-                                            do_sample=True,
                                             return_dict_in_generate=True,
                                             num_return_sequences=3,
                                             eos_token_id=self.tokenizer.eos_token_id,
                                             bad_words_ids=[[self.tokenizer.unk_token_id]])
 
-        gen_sequences = res_ids.sequences[:, input_ids.shape[-1]:]
-        probs = torch.stack(res_ids.socres, dim=1).softmax(-1)
-        gen_probs = torch.gather(probs, 2, gen_sequences[:, :, None])
-        unique_prob_per_sequence = gen_probs.prod(-1)
-        normed_gen_probs = gen_probs / gen_probs.sum(0)
-        assert normed_gen_probs[:, 0].sum() == 1.0, "probs should be normalized"
-        unique_normed_prob_per_sequence = normed_gen_probs.prod(-1)
-        print(unique_normed_prob_per_sequence)
+        print("============")
+        gen_ids=res_ids["sequences"][0, input_ids.shape[-1]:]
+        print(res_ids["scores"][0][0, gen_ids[0]].tolist())
+
+        # gen_sequences = res_ids.sequences[:, input_ids.shape[-1]:]
+        # probs = torch.stack(res_ids.socres, dim=1).softmax(-1)
+        # gen_probs = torch.gather(probs, 2, gen_sequences[:, :, None])
+        # unique_prob_per_sequence = gen_probs.prod(-1)
+        # normed_gen_probs = gen_probs / gen_probs.sum(0)
+        # assert normed_gen_probs[:, 0].sum() == 1.0, "probs should be normalized"
+        # unique_normed_prob_per_sequence = normed_gen_probs.prod(-1)
+        # print(unique_normed_prob_per_sequence)
         # logits = self.model(res_ids).logits
         # probs = logits[0].softmax(dim=0)
         # values, predictions = probs.topk(3)
@@ -113,11 +116,6 @@ class KoBARTGenerationModel(Base):
         # print(probs)
         # print("logits>>>")
         # print(logits)
-
-
-        #print("============")
-        #gen_ids=res_ids["sequences"][0, input_ids.shape[-1]:]
-        #print(res_ids["scores"][0][0, gen_ids[0]].tolist())
 
         return  res_ids
         # result = []
