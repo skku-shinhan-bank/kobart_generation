@@ -56,10 +56,10 @@ args = easydict.EasyDict({
 from kobart_generation import KoBARTCommentGenerator
 
 comment_generator = KoBARTCommentGenerator(args)
-# Chat form : Review -> Generate and print comment  
+# Chat form : Review -> Generate and return comment  
 comment_generator.print_comment('review', issue_id)  
 
-# Chat form : Review -> Generate and print n-best comments  
+# Chat form : Review -> Generate and return n-best comments  
 comment_generator.print_nbest_comment('review', issue_id)  
 
 # Review file -> Generate comments and store Excel file  
