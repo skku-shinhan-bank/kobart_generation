@@ -91,6 +91,7 @@ class KoBARTGenerationModel(Base):
                                             max_length=self.hparams.max_seq_len,
                                             num_beams=5,
                                             output_scores=True,
+                                            do_sample=True,
                                             return_dict_in_generate=True,
                                             num_return_sequences=3,
                                             eos_token_id=self.tokenizer.eos_token_id,
