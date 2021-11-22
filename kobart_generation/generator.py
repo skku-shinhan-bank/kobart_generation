@@ -36,7 +36,7 @@ class KoBARTCommentGenerator(Base):
         predict_output = []
         test_data = pd.read_excel(file_path)
         cnt=0
-        for i in range(test_data):
+        for i in range(len(test_data)):
             sentence = test_data['review'][i]
             issue_id = test_data['issue_id'][i]
             row = []
