@@ -96,7 +96,14 @@ class KoBARTGenerationModel(Base):
                                             eos_token_id=self.tokenizer.eos_token_id,
                                             bad_words_ids=[[self.tokenizer.unk_token_id]])
 
-        print(self.tokenizer.batch_decode(res_ids))
+        logits = self.model(res_ids).logits
+        probs = logits[0].softmax(dim=0)
+        values, predictions = probs.topk(3)
+        self.tokenizer.decode(predictions).split()
+        print("probs>>>")
+        print(probs)
+        print("logits>>>")
+        print(logits)
         #print("============")
         #gen_ids=res_ids["sequences"][0, input_ids.shape[-1]:]
         #print(res_ids["scores"][0][0, gen_ids[0]].tolist())
