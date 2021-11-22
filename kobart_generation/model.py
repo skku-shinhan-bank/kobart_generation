@@ -97,8 +97,10 @@ class KoBARTGenerationModel(Base):
                                             bad_words_ids=[[self.tokenizer.unk_token_id]])
 
         print("============")
-        gen_ids=res_ids["sequences"][0, input_ids.shape[-1]:]
-        print(res_ids["scores"][0][0, gen_ids[0]].tolist())
+        probs = torch.stack(res_ids.scores, dim=1).softmax(-1)
+        print(probs)
+        # gen_ids=res_ids["sequences"][0, input_ids.shape[-1]:]
+        # print(res_ids["scores"][0][0, gen_ids[0]].tolist())
 
         # gen_sequences = res_ids.sequences[:, input_ids.shape[-1]:]
         # probs = torch.stack(res_ids.socres, dim=1).softmax(-1)
