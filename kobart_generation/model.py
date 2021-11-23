@@ -97,10 +97,12 @@ class KoBARTGenerationModel(Base):
                                             bad_words_ids=[[self.tokenizer.unk_token_id]])
 
         result = []
+        comments = self.tokenizer.batch_decode(res_ids.tolist())[0]
+        print(comments)
+
         for i in range(0, 3):
-            a = self.tokenizer.batch_decode(res_ids.tolist())[0][i]
-            a.replace('<usr>', '').replace('</s>', '')
-            result.append(a)
+            comments[i].replace('<usr>', '').replace('</s>', '')
+            result.append(comments[i])
         return result
 
         # print("============")
