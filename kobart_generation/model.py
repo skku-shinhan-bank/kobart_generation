@@ -96,9 +96,16 @@ class KoBARTGenerationModel(Base):
                                             eos_token_id=self.tokenizer.eos_token_id,
                                             bad_words_ids=[[self.tokenizer.unk_token_id]])
 
-        print("============")
-        probs = torch.stack(res_ids.scores, dim=1).softmax(-1)
-        print(probs)
+        result = []
+        for i in range(0, 3):
+            a = self.tokenizer.batch_decode(res_ids.tolist())[i]
+            a.replace('<usr>', '').replace('</s>', '')
+            result.append(a)
+        return result
+
+        # print("============")
+        # probs = torch.stack(res_ids.scores, dim=1).softmax(-1)
+        # print(probs)
         # gen_ids=res_ids["sequences"][0, input_ids.shape[-1]:]
         # print(res_ids["scores"][0][0, gen_ids[0]].tolist())
 
@@ -118,16 +125,4 @@ class KoBARTGenerationModel(Base):
         # print(probs)
         # print("logits>>>")
         # print(logits)
-
-        return  res_ids
-        # result = []
-        # for i in range(0, 3):
-        #     print(i)
-        #     # print(self.tokenizer.batch_decode(res_ids.tolist()))
-        #     a = self.tokenizer.batch_decode(res_ids.tolist())[i]
-        #     # a.replace('<usr>', '').replace('<s>', '').replace('</s>', '')
-        #     print(a)
-        #     print("\n")
-        #     result.append(a)
-        # # print(result)
-        # return result
+        # return  res_ids
