@@ -98,8 +98,8 @@ class KoBARTGenerationModel(Base):
         result = []
         for i in range(0, 3):
             a = self.tokenizer.batch_decode(res_ids.tolist())[i]
-            a.replace('<usr>', '').replace('</s>', '')
-            result.append(a)
+            comment = a.replace('<usr>', '').replace('</s>', '').replace('<pad>', '')
+            result.append(comment)
         return result
 
         # print("============")
